@@ -3,7 +3,7 @@ use arsdk_rs::Drone;
 use std::net::IpAddr;
 
 use arsdk_rs::command::Feature::JumpingSumo as JumpingSumoFeature;
-use arsdk_rs::frame::{Type as FrameType, ID as FrameID};
+use arsdk_rs::frame::{Type as FrameType, BufferID, Frame};
 use arsdk_rs::jumping_sumo::Class::*;
 use arsdk_rs::jumping_sumo::PilotState;
 use arsdk_rs::jumping_sumo::PilotingID::*;
@@ -53,7 +53,7 @@ impl JumpingSumo {
 
     pub fn drive(&self, state: PilotState) -> AnyResult<()> {
         let feature = JumpingSumoFeature(Piloting(Pilot(state)));
-        let frame = Frame::for_drone(&drone, FrameType::Data, FrameID::CDNonAck, feature);
+        let frame = Frame::for_drone(&self.drone, FrameType::Data, BufferID::CDNonAck, feature);
 
         self.drone.send_frame(frame)
     }

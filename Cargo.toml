@@ -9,4 +9,4 @@ keywords = ["drone", "parrot", "jumping", "sumo"]
 
 [dependencies]
 anyhow = "1.0"
-arsdk-rs = { git = "https://github.com/o0Ignition0o/arsdk-rs", branch = "api" }
+arsdk-rs = { git = "https://github.com/elpiel/arsdk-rs", branch = "api" }
