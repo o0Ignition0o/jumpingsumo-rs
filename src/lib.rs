@@ -3,7 +3,7 @@ use arsdk_rs::Drone;
 use std::net::IpAddr;
 
 use arsdk_rs::command::Feature::JumpingSumo as JumpingSumoFeature;
-use arsdk_rs::frame::{Type as FrameType, ID as FrameID};
+use arsdk_rs::frame::{BufferID, Frame, Type as FrameType};
 use arsdk_rs::jumping_sumo::Class::*;
 use arsdk_rs::jumping_sumo::PilotState;
 use arsdk_rs::jumping_sumo::PilotingID::*;
@@ -13,7 +13,7 @@ pub struct JumpingSumo {
 }
 
 impl JumpingSumo {
-    pub fn new(addr: Option<IpAddr>) -> AnyResult<Self> {
+    pub fn new(addr: IpAddr) -> AnyResult<Self> {
         Ok(Self {
             drone: Drone::new(addr)?,
         })
@@ -21,7 +21,7 @@ impl JumpingSumo {
 
     pub fn forward(&self) -> AnyResult<()> {
         self.drive(PilotState {
-            flag: 1,
+            flag: true,
             speed: i8::MAX,
             turn: 0,
         })
@@ -29,7 +29,7 @@ impl JumpingSumo {
 
     pub fn backwards(&self) -> AnyResult<()> {
         self.drive(PilotState {
-            flag: 1,
+            flag: true,
             speed: i8::MIN,
             turn: 0,
         })
@@ -37,7 +37,7 @@ impl JumpingSumo {
 
     pub fn turn_left(&self) -> AnyResult<()> {
         self.drive(PilotState {
-            flag: 1,
+            flag: true,
             speed: 0,
             turn: i8::MIN,
         })
@@ -45,7 +45,7 @@ impl JumpingSumo {
 
     pub fn turn_right(&self) -> AnyResult<()> {
         self.drive(PilotState {
-            flag: 1,
+            flag: true,
             speed: 0,
             turn: i8::MAX,
         })
@@ -53,9 +53,8 @@ impl JumpingSumo {
 
     pub fn drive(&self, state: PilotState) -> AnyResult<()> {
         let feature = JumpingSumoFeature(Piloting(Pilot(state)));
-        let command = self
-            .drone
-            .build_frame(FrameType::Data, FrameID::CDNonAck, feature);
-        self.drone.send_frame(command)
+        let frame = Frame::for_drone(&self.drone, FrameType::Data, BufferID::CDNonAck, feature);
+
+        self.drone.send_frame(frame)
     }
 }
